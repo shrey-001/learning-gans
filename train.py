@@ -1,5 +1,5 @@
 import torch
-import torch.optim as optim
+
 import torch.nn as nn
 from torch.utils.data import DataLoader, RandomSampler
 import torchvision
@@ -32,9 +32,6 @@ print(f'Using {device} device')
 
 generator = vgan.Generator().to(device)
 discriminator = vgan.Discriminator().to(device) 
-
-wandb.watch(generator, log_freq=100)
-wandb.watch(discriminator, log_freq=100)
 
 g_optim = optim.Adam(generator.parameters(), lr=lr)
 d_optim = optim.Adam(discriminator.parameters(), lr=lr)
@@ -94,3 +91,10 @@ for epoch in range(num_of_epoch):
                         'Discriminator Accuracy for Real': acc_dis_real,
                         'Discriminator Accuracy for Generated image': acc_dis_fake})
 
+if __name__=="__main__":
+    
+    # Argument parser
+
+    # Dataloader loading
+    
+    # Training
