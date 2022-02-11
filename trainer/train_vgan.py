@@ -1,11 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from ..models.vanilla_gan import Discriminator, Generator
-from ..eval import evaluate
-from ..utils import AverageMeter
+import wandb
+from utils import AverageMeter
  
-def train_on_epoch(dataloader,generator,discriminator,g_optim,d_optim,criterion,wandb,cur_epoch):
+def train_on_epoch(dataloader,generator,discriminator,g_optim,d_optim,criterion,cur_epoch,device,wandb_log=True):
     """
     Min-Max game
     """
@@ -47,33 +46,18 @@ def train_on_epoch(dataloader,generator,discriminator,g_optim,d_optim,criterion,
 
         output = discriminator(fake).view(-1)
         loss_gen = criterion(output, torch.ones_like(output))
-        l_G.update(loss_gen)
+        l_G.update(loss_gen.item())
 
         generator.zero_grad()
         loss_gen.backward()
         g_optim.step()
-
-    if wandb:
-        wandb.log({"disc_image_accuracy":disc_image_accuracy,
-                    "disc_fake_accuracy":disc_fake_accuracy,
-                    "Loss Discriminator":l_D,
-                    "Loss Generator":l_G},
+    print("Epoch :",cur_epoch,",Loss Discriminator","%.4f"%(l_D.avg),",Loss Generator","%.4f"%(l_G.avg))
+    if wandb_log:
+        wandb.log({"disc_image_accuracy":disc_image_accuracy.avg,
+                    "disc_fake_accuracy":disc_fake_accuracy.avg,
+                    "Loss Discriminator":l_D.avg,
+                    "Loss Generator":l_G.avg},
                     step = cur_epoch)
-    
-
-def train(dataloader,lr,max_epoch,wandb=False):
-    discriminator = Discriminator().to(DEVICE)
-    generator = Generator().to(DEVICE)
-
-    d_optim = optim.Adam(discriminator.parameters(),lr =lr)
-    g_optim = optim.Adam(generator.parameters(),lr=lr)
-
-    criterion = nn.BCELoss()
-
-    for epoch in range(1, 1+max_epoch):
-        train_on_epoch(dataloader,generator,discriminator,g_optim,d_optim,criterion,wandb,epoch)
-        evaluate()
-
 
 
     

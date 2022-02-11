@@ -1,11 +1,11 @@
 import torch.nn as nn
 
 class Discriminator(nn.Module):
-  def __init__(self):
+  def __init__(self,n_feature):
     super(Discriminator,self).__init__()
-    n_features = 784   #  28*28
+    self.n_feature = n_feature   #  28*28
     self.disc = nn.Sequential(
-        nn.Linear(n_features, 128),
+        nn.Linear(self.n_feature, 128),
         nn.LeakyReLU(0.1),
         nn.Linear(128, 1),
         nn.Sigmoid()
@@ -14,15 +14,15 @@ class Discriminator(nn.Module):
     return self.disc(x)
 
 class Generator(nn.Module):
-  def __init__(self):
+  def __init__(self,n_feature,n_out):
     super(Generator,self).__init__()
-    n_feature = 100
-    n_out = 784  
+    self.n_feature = n_feature
+    self.n_out = n_out  
 
     self.gen = nn.Sequential(
-        nn.Linear(n_feature, 256),
+        nn.Linear(self.n_feature, 256),
         nn.LeakyReLU(0.1),
-        nn.Linear(256, n_out),
+        nn.Linear(256, self.n_out),
         nn.Tanh()
     )
 

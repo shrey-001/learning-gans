@@ -1,8 +1,6 @@
 class AverageMeter(object):
-   
-     def __init__(self):
+    def __init__(self):
         self.reset()
-
     def reset(self):
         self.val = 0
         self.avg = 0
